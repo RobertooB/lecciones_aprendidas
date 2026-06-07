@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lecciones Aprendidas</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #14171f;
+    --surface2: #1c2030;
+    --border: #252a3a;
+    --text: #e8eaf0;
+    --muted: #6b7394;
+    --accent-green: #00e5a0;
+    --accent-blue: #4d9fff;
+    --accent-orange: #ff7c3d;
+    --accent-yellow: #ffd166;
+    --success: #00e5a0;
+    --challenge: #ff5e7e;
+    --improve: #ffd166;
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID BG */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .app { position: relative; z-index: 1; max-width: 1200px; margin: 0 auto; padding: 0 24px 60px; }
+
+  /* HEADER */
+  header {
+    padding: 48px 0 36px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .header-text h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--text);
+  }
+  .header-text h1 span { color: var(--accent-green); }
+  .header-text p { color: var(--muted); font-size: 0.8rem; margin-top: 8px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .stats-bar {
+    margin-left: auto;
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .stat-pill {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 8px 18px;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .stat-pill .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .dot-green { background: var(--success); box-shadow: 0 0 8px var(--success); }
+  .dot-red   { background: var(--challenge); box-shadow: 0 0 8px var(--challenge); }
+  .dot-yellow{ background: var(--improve); box-shadow: 0 0 8px var(--improve); }
+
+  /* GRID LAYOUT */
+  .main-grid { display: grid; grid-template-columns: 380px 1fr; gap: 28px; align-items: start; }
+  @media (max-width: 900px) { .main-grid { grid-template-columns: 1fr; } }
+
+  /* FORM CARD */
+  .form-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    position: sticky;
+    top: 24px;
+    animation: slideIn .5s ease;
+  }
+  @keyframes slideIn { from { opacity:0; transform: translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+  .form-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .form-title::before {
+    content: '';
+    width: 4px; height: 20px;
+    background: var(--accent-green);
+    border-radius: 2px;
+    box-shadow: 0 0 10px var(--accent-green);
+  }
+
+  .field { margin-bottom: 16px; }
+  label { display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 6px; }
+
+  input, select, textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.82rem;
+    padding: 10px 14px;
+    transition: border-color .2s, box-shadow .2s;
+    outline: none;
+    -webkit-appearance: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent-green);
+    box-shadow: 0 0 0 3px rgba(0,229,160,.1);
+  }
+  select option { background: #1c2030; }
+  textarea { resize: vertical; min-height: 72px; }
+  input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); }
+
+  .tipo-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .tipo-btn {
+    padding: 8px 4px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: all .2s;
+    text-align: center;
+  }
+  .tipo-btn:hover { border-color: var(--text); color: var(--text); }
+  .tipo-btn.active-exito   { border-color: var(--success); color: var(--success); background: rgba(0,229,160,.08); box-shadow: 0 0 12px rgba(0,229,160,.15); }
+  .tipo-btn.active-desafio { border-color: var(--challenge); color: var(--challenge); background: rgba(255,94,126,.08); box-shadow: 0 0 12px rgba(255,94,126,.15); }
+  .tipo-btn.active-mejora  { border-color: var(--improve); color: var(--improve); background: rgba(255,209,102,.08); box-shadow: 0 0 12px rgba(255,209,102,.15); }
+
+  .impacto-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .impacto-btn {
+    padding: 8px 4px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    transition: all .2s;
+    text-align: center;
+  }
+  .impacto-btn:hover { border-color: var(--text); color: var(--text); }
+  .impacto-btn.active { border-color: var(--accent-blue); color: var(--accent-blue); background: rgba(77,159,255,.1); }
+
+  .btn-submit {
+    width: 100%;
+    margin-top: 8px;
+    padding: 13px;
+    background: var(--accent-green);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,229,160,.3); }
+  .btn-submit:active { transform: translateY(0); }
+  .btn-submit.editing { background: var(--accent-yellow); }
+
+  /* RIGHT PANEL */
+  .right-panel { display: flex; flex-direction: column; gap: 20px; }
+
+  /* CONTROLS */
+  .controls-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .search-wrap { position: relative; flex: 1; min-width: 180px; }
+  .search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+  .search-wrap input { padding-left: 38px; }
+
+  .filter-group { display: flex; gap: 8px; flex-wrap: wrap; }
+  .filter-chip {
+    padding: 7px 14px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+  }
+  .filter-chip:hover { border-color: var(--text); color: var(--text); }
+  .filter-chip.active { border-color: var(--accent-blue); color: var(--accent-blue); background: rgba(77,159,255,.1); }
+
+  .btn-csv {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--accent-orange);
+    border-color: var(--accent-orange);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: all .2s;
+    display: flex; align-items: center; gap: 6px;
+    white-space: nowrap;
+  }
+  .btn-csv:hover { background: rgba(255,124,61,.1); box-shadow: 0 0 12px rgba(255,124,61,.2); }
+
+  /* LESSONS GRID */
+  .lessons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  .lesson-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    position: relative;
+    transition: transform .2s, box-shadow .2s;
+    animation: fadeCard .35s ease;
+    overflow: hidden;
+  }
+  @keyframes fadeCard { from { opacity:0; transform:scale(.97); } to { opacity:1; transform:scale(1); } }
+  .lesson-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .lesson-card.exito::before    { background: var(--success); box-shadow: 0 0 16px rgba(0,229,160,.5); }
+  .lesson-card.desafio::before  { background: var(--challenge); box-shadow: 0 0 16px rgba(255,94,126,.5); }
+  .lesson-card.mejora::before   { background: var(--improve); box-shadow: 0 0 16px rgba(255,209,102,.5); }
+  .lesson-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,.4); }
+
+  .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 8px; }
+  .card-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tag {
+    font-size: 0.62rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 3px 9px;
+    border-radius: 100px;
+    font-weight: 500;
+  }
+  .tag-exito    { background: rgba(0,229,160,.12); color: var(--success); border: 1px solid rgba(0,229,160,.25); }
+  .tag-desafio  { background: rgba(255,94,126,.12); color: var(--challenge); border: 1px solid rgba(255,94,126,.25); }
+  .tag-mejora   { background: rgba(255,209,102,.12); color: var(--improve); border: 1px solid rgba(255,209,102,.25); }
+  .tag-bajo     { background: rgba(77,159,255,.1); color: var(--accent-blue); border: 1px solid rgba(77,159,255,.2); }
+  .tag-medio    { background: rgba(255,124,61,.1); color: var(--accent-orange); border: 1px solid rgba(255,124,61,.2); }
+  .tag-alto     { background: rgba(255,94,126,.1); color: var(--challenge); border: 1px solid rgba(255,94,126,.2); }
+
+  .card-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .card-btn {
+    width: 30px; height: 30px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--muted);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s;
+    font-size: 0.75rem;
+  }
+  .card-btn:hover.edit { border-color: var(--accent-yellow); color: var(--accent-yellow); background: rgba(255,209,102,.08); }
+  .card-btn:hover.del  { border-color: var(--challenge); color: var(--challenge); background: rgba(255,94,126,.08); }
+
+  .card-project { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); margin-bottom: 6px; }
+  .card-desc { font-size: 0.82rem; line-height: 1.6; color: var(--text); margin-bottom: 12px; }
+  .card-actions-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+  .card-actions-text { font-size: 0.78rem; color: #a0a8c0; line-height: 1.5; }
+  .card-date { font-size: 0.65rem; color: var(--muted); margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); letter-spacing: 0.04em; }
+
+  /* EMPTY STATE */
+  .empty-state {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+  .empty-state .icon { font-size: 3rem; margin-bottom: 12px; }
+  .empty-state h3 { font-family: 'Syne', sans-serif; font-size: 1.1rem; color: var(--text); margin-bottom: 6px; }
+  .empty-state p { font-size: 0.78rem; }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 32px; right: 32px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 20px;
+    font-size: 0.8rem;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all .3s cubic-bezier(.34,1.56,.64,1);
+    z-index: 1000;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-green); box-shadow: 0 0 8px var(--accent-green); flex-shrink: 0; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="header-text">
+      <h1>Lecciones <span>Aprendidas</span></h1>
+      <p>Registro &amp; Gestión de Conocimiento Proyectual</p>
+    </div>
+    <div class="stats-bar" id="statsBar">
+      <div class="stat-pill"><span class="dot dot-green"></span><span id="cntExito">0</span> Éxitos</div>
+      <div class="stat-pill"><span class="dot dot-red"></span><span id="cntDesafio">0</span> Desafíos</div>
+      <div class="stat-pill"><span class="dot dot-yellow"></span><span id="cntMejora">0</span> Mejoras</div>
+    </div>
+  </header>
+
+  <div class="main-grid">
+    <!-- FORM -->
+    <div class="form-card">
+      <div class="form-title">Nueva Lección</div>
+
+      <div class="field">
+        <label>Nombre del Proyecto</label>
+        <input type="text" id="proyecto" placeholder="Ej: Sistema CRM v2" />
+      </div>
+
+      <div class="field">
+        <label>Tipo de Lección</label>
+        <div class="tipo-selector">
+          <button class="tipo-btn" data-tipo="exito" onclick="selectTipo('exito')">✓ Éxito</button>
+          <button class="tipo-btn" data-tipo="desafio" onclick="selectTipo('desafio')">✕ Desafío</button>
+          <button class="tipo-btn" data-tipo="mejora" onclick="selectTipo('mejora')">↗ Mejora</button>
+        </div>
+        <input type="hidden" id="tipo" />
+      </div>
+
+      <div class="field">
+        <label>Descripción de la Lección</label>
+        <textarea id="descripcion" placeholder="Describe qué ocurrió, el contexto y aprendizajes clave..."></textarea>
+      </div>
+
+      <div class="field">
+        <label>Nivel de Impacto</label>
+        <div class="impacto-selector">
+          <button class="impacto-btn" data-imp="bajo" onclick="selectImpacto('bajo')">↓ Bajo</button>
+          <button class="impacto-btn" data-imp="medio" onclick="selectImpacto('medio')">→ Medio</button>
+          <button class="impacto-btn" data-imp="alto" onclick="selectImpacto('alto')">↑ Alto</button>
+        </div>
+        <input type="hidden" id="impacto" />
+      </div>
+
+      <div class="field">
+        <label>Acciones Recomendadas</label>
+        <textarea id="acciones" placeholder="¿Qué se debería hacer diferente? ¿Qué replicar?"></textarea>
+      </div>
+
+      <div class="field">
+        <label>Fecha de Registro</label>
+        <input type="date" id="fecha" />
+      </div>
+
+      <button class="btn-submit" id="btnSubmit" onclick="guardarLeccion()">Registrar Lección</button>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="right-panel">
+      <!-- CONTROLS -->
+      <div class="controls-bar">
+        <div class="search-wrap">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="busqueda" placeholder="Buscar lecciones..." oninput="renderLecciones()" />
+        </div>
+        <div class="filter-group">
+          <button class="filter-chip active" data-filtro="todos" onclick="setFiltro('todos', this)">Todos</button>
+          <button class="filter-chip" data-filtro="exito" onclick="setFiltro('exito', this)">Éxitos</button>
+          <button class="filter-chip" data-filtro="desafio" onclick="setFiltro('desafio', this)">Desafíos</button>
+          <button class="filter-chip" data-filtro="mejora" onclick="setFiltro('mejora', this)">Mejoras</button>
+        </div>
+        <button class="btn-csv" onclick="descargarCSV()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          CSV
+        </button>
+      </div>
+
+      <!-- CARDS -->
+      <div class="lessons-grid" id="lessonsGrid"></div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span class="toast-dot"></span><span id="toastMsg"></span></div>
+
+<script>
+// ── STATE ──
+let lecciones = JSON.parse(localStorage.getItem('lecciones_aprendidas') || '[]');
+let filtroActivo = 'todos';
+let editandoId = null;
+
+// ── INIT ──
+document.getElementById('fecha').valueAsDate = new Date();
+renderLecciones();
+updateStats();
+
+// ── TIPO & IMPACTO SELECTORS ──
+function selectTipo(tipo) {
+  document.getElementById('tipo').value = tipo;
+  document.querySelectorAll('.tipo-btn').forEach(b => b.className = 'tipo-btn');
+  document.querySelector(`.tipo-btn[data-tipo="${tipo}"]`).className = `tipo-btn active-${tipo}`;
+}
+function selectImpacto(imp) {
+  document.getElementById('impacto').value = imp;
+  document.querySelectorAll('.impacto-btn').forEach(b => b.className = 'impacto-btn');
+  document.querySelector(`.impacto-btn[data-imp="${imp}"]`).className = 'impacto-btn active';
+}
+
+// ── SAVE / EDIT ──
+function guardarLeccion() {
+  const proyecto    = document.getElementById('proyecto').value.trim();
+  const tipo        = document.getElementById('tipo').value;
+  const descripcion = document.getElementById('descripcion').value.trim();
+  const impacto     = document.getElementById('impacto').value;
+  const acciones    = document.getElementById('acciones').value.trim();
+  const fecha       = document.getElementById('fecha').value;
+
+  if (!proyecto || !tipo || !descripcion || !impacto || !fecha) {
+    mostrarToast('⚠️ Completa todos los campos requeridos');
+    return;
+  }
+
+  if (editandoId !== null) {
+    const idx = lecciones.findIndex(l => l.id === editandoId);
+    lecciones[idx] = { ...lecciones[idx], proyecto, tipo, descripcion, impacto, acciones, fecha };
+    editandoId = null;
+    document.getElementById('btnSubmit').textContent = 'Registrar Lección';
+    document.getElementById('btnSubmit').className = 'btn-submit';
+    mostrarToast('Lección actualizada');
+  } else {
+    lecciones.unshift({ id: Date.now(), proyecto, tipo, descripcion, impacto, acciones, fecha });
+    mostrarToast('Lección registrada');
+  }
+
+  guardar();
+  resetForm();
+  renderLecciones();
+  updateStats();
+}
+
+function resetForm() {
+  ['proyecto','tipo','descripcion','impacto','acciones'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('fecha').valueAsDate = new Date();
+  document.querySelectorAll('.tipo-btn').forEach(b => b.className = 'tipo-btn');
+  document.querySelectorAll('.impacto-btn').forEach(b => b.className = 'impacto-btn');
+}
+
+function editarLeccion(id) {
+  const l = lecciones.find(x => x.id === id);
+  if (!l) return;
+  editandoId = id;
+  document.getElementById('proyecto').value    = l.proyecto;
+  document.getElementById('descripcion').value = l.descripcion;
+  document.getElementById('acciones').value    = l.acciones;
+  document.getElementById('fecha').value       = l.fecha;
+  selectTipo(l.tipo);
+  selectImpacto(l.impacto);
+  document.getElementById('btnSubmit').textContent = 'Guardar Cambios';
+  document.getElementById('btnSubmit').className = 'btn-submit editing';
+  document.querySelector('.form-card').scrollIntoView({ behavior: 'smooth' });
+}
+
+function eliminarLeccion(id) {
+  lecciones = lecciones.filter(l => l.id !== id);
+  guardar();
+  renderLecciones();
+  updateStats();
+  mostrarToast('Lección eliminada');
+}
+
+// ── FILTER ──
+function setFiltro(f, el) {
+  filtroActivo = f;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderLecciones();
+}
+
+// ── RENDER ──
+function renderLecciones() {
+  const q = document.getElementById('busqueda').value.toLowerCase();
+  const grid = document.getElementById('lessonsGrid');
+
+  let filtered = lecciones.filter(l => {
+    const matchFiltro = filtroActivo === 'todos' || l.tipo === filtroActivo;
+    const matchQ = !q || [l.proyecto, l.descripcion, l.acciones].join(' ').toLowerCase().includes(q);
+    return matchFiltro && matchQ;
+  });
+
+  if (!filtered.length) {
+    grid.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">📋</div>
+        <h3>Sin lecciones registradas</h3>
+        <p>Agrega tu primera lección usando el formulario</p>
+      </div>`;
+    return;
+  }
+
+  const tipoLabel  = { exito:'Éxito', desafio:'Desafío', mejora:'Mejora' };
+  const tipoTag    = { exito:'tag-exito', desafio:'tag-desafio', mejora:'tag-mejora' };
+  const impactoTag = { bajo:'tag-bajo', medio:'tag-medio', alto:'tag-alto' };
+  const impLabel   = { bajo:'↓ Bajo', medio:'→ Medio', alto:'↑ Alto' };
+
+  grid.innerHTML = filtered.map(l => `
+    <div class="lesson-card ${l.tipo}">
+      <div class="card-header">
+        <div class="card-tags">
+          <span class="tag ${tipoTag[l.tipo]}">${tipoLabel[l.tipo]}</span>
+          <span class="tag ${impactoTag[l.impacto]}">${impLabel[l.impacto]}</span>
+        </div>
+        <div class="card-actions">
+          <button class="card-btn edit" title="Editar" onclick="editarLeccion(${l.id})">✎</button>
+          <button class="card-btn del"  title="Eliminar" onclick="eliminarLeccion(${l.id})">✕</button>
+        </div>
+      </div>
+      <div class="card-project">${escHtml(l.proyecto)}</div>
+      <div class="card-desc">${escHtml(l.descripcion)}</div>
+      ${l.acciones ? `<div class="card-actions-label">Acciones recomendadas</div><div class="card-actions-text">${escHtml(l.acciones)}</div>` : ''}
+      <div class="card-date">📅 ${formatFecha(l.fecha)}</div>
+    </div>
+  `).join('');
+}
+
+// ── STATS ──
+function updateStats() {
+  document.getElementById('cntExito').textContent   = lecciones.filter(l => l.tipo === 'exito').length;
+  document.getElementById('cntDesafio').textContent = lecciones.filter(l => l.tipo === 'desafio').length;
+  document.getElementById('cntMejora').textContent  = lecciones.filter(l => l.tipo === 'mejora').length;
+}
+
+// ── CSV ──
+function descargarCSV() {
+  if (!lecciones.length) { mostrarToast('No hay lecciones para exportar'); return; }
+  const headers = ['ID','Proyecto','Tipo','Descripcion','Impacto','Acciones','Fecha'];
+  const rows = lecciones.map(l => [l.id, l.proyecto, l.tipo, l.descripcion, l.impacto, l.acciones, l.fecha].map(v => `"${String(v).replace(/"/g,'""')}"`).join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `lecciones_aprendidas_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  mostrarToast('CSV descargado');
+}
+
+// ── UTILS ──
+function guardar() { localStorage.setItem('lecciones_aprendidas', JSON.stringify(lecciones)); }
+function escHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function formatFecha(f) { if (!f) return '—'; const [y,m,d] = f.split('-'); return `${d}/${m}/${y}`; }
+function mostrarToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+</script>
+</body>
+</html>
